@@ -1,5 +1,5 @@
+const Authentication = require('./authentication');
 const SaleResource = require('./resources/sale');
-const recipe = require('./triggers/recipe');
 
 const addAuthToHeader = (request, z, bundle) => {
 	request.headers['api-auth-accountid'] = bundle.authData.accountId;
@@ -14,31 +14,7 @@ const App = {
 	version: require('./package.json').version,
 	platformVersion: require('zapier-platform-core').version,
 
-	authentication: {
-		type: 'custom',
-		fields: [
-      {
-        key: 'accountId',
-        type: 'string',
-        required: true,
-        helpText: 'Your Account ID, found at https://inventory.dearsystems.com/ExternalApi'
-      },
-      {
-        key: 'applicationKey',
-        type: 'string',
-        required: true,
-        helpText: 'Your API Key, found at https://inventory.dearsystems.com/ExternalApi'
-      }
-		],
-		test: (z, bundle) => {
-			const promise = z.request('https://inventory.dearsystems.com/ExternalApi/Me');
-			return promise.then(response => {
-				if (response.status !== 200) {
-					throw new Error('Invalid API Credentials');
-				}
-			});
-		}
-	},
+	authentication: Authentication,
 
   // beforeRequest & afterResponse are optional hooks into the provided HTTP client
 	beforeRequest: [

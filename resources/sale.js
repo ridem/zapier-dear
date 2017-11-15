@@ -58,7 +58,10 @@ module.exports = {
     },
     operation: {
       inputFields: [
-        {key: 'id', required: true}
+        {
+          key: 'id',
+          required: true
+        }
       ],
       perform: getSale
     }
@@ -81,7 +84,12 @@ module.exports = {
     },
     operation: {
       inputFields: [
-        {key: 'string', required: true, type: 'string', description: 'Only return sales with search value contained in one of these fields: OrderNumber, Status, Customer, invoiceNumber, CustomerReference, CreditNoteNumber'}
+        {
+          key: 'string',
+          required: true,
+          type: 'string',
+          helpText: 'Only return sales with search value contained in one of these fields: OrderNumber, Status, Customer, invoiceNumber, CustomerReference, CreditNoteNumber'
+        }
       ],
       perform: searchSales
     },
