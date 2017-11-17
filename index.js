@@ -1,3 +1,4 @@
+const InvoiceCreate = require('./creates/invoice');
 const Authentication = require('./authentication');
 const SaleResource = require('./resources/sale');
 
@@ -20,9 +21,13 @@ const App = {
 	beforeRequest: [
 		addAuthToHeader
 	],
-
+  
 	afterResponse: [
 	],
+
+  hydrators: {
+    getSaleDetails: SaleResource.get.operation.perform
+  },
 
   // If you want to define optional resources to simplify creation of triggers, searches, creates - do that here!
 	resources: {
@@ -31,7 +36,6 @@ const App = {
 
   // If you want your trigger to show up, you better include it here!
 	triggers: {
-		// [recipe.key]: recipe
 	},
 
   // If you want your searches to show up, you better include it here!
@@ -40,6 +44,7 @@ const App = {
 
   // If you want your creates to show up, you better include it here!
 	creates: {
+    [InvoiceCreate.key]: InvoiceCreate,
 	}
 };
 

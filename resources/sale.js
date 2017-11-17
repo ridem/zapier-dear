@@ -1,24 +1,49 @@
-const apiEndpoint = "https://inventory.dearsystems.com/ExternalApi";
+const apiEndpoint = require('../apiEndpoints').externalApi;
+const listLimit = 100;
 
 // get a single sale
 const getSale = (z, bundle) => {
   const responsePromise = z.request({
     url: `${apiEndpoint}/Sale`,
     params: {
-      ID: bundle.inputData.id
+      "ID": bundle.inputData.id
     }
   });
   return responsePromise
-    .then(response => JSON.parse(response.content));
+    .then(response => {
+      const data = z.JSON.parse(response.content);
+      data.id = data["ID"]
+      delete data["ID"];
+      return data
+    });
 };
 
 // get a list of sales
-const listSales = (z) => {
+const listSales = (z, bundle) => {
+  const resourceName = "SaleList";
   const responsePromise = z.request({
-    url: `${apiEndpoint}/SaleList`
+    url: `${apiEndpoint}/${resourceName}`,
+    params: {
+      "Limit": listLimit,
+      "Page": 1
+    }
   });
   return responsePromise
-    .then(response => JSON.parse(response.content["SaleList"]));
+    .then(response => {
+      var page = Math.trunc(z.JSON.parse(response.content)["Total"] / listLimit) + 1
+      return z.request({
+        url: `${apiEndpoint}/${resourceName}`,
+        params: {
+          "Limit": listLimit,
+          "Page": page
+        }
+      }).then(response => {
+        var results = z.JSON.parse(response.content)[resourceName].reverse();
+        return results.map(function(sale){
+          return {id: sale["ID"], sale: z.dehydrate(getSale, { id: sale["ID"] })};
+        })
+      })
+    });
 };
 
 // find a particular sale by name
@@ -30,22 +55,22 @@ const searchSales = (z, bundle) => {
     }
   });
   return responsePromise
-    .then(response => JSON.parse(response.content["SaleList"]));
+    .then(response => z.JSON.parse(response.content)["SaleList"]);
 };
 
-// create a sale
-const createSale = (z, bundle) => {
-  const responsePromise = z.request({
-    method: 'POST',
-    url: `${apiEndpoint}/Sale`,
-    body: {
-      ID: bundle.inputData.id,
-      name: bundle.inputData.name // json by default
-    }
-  });
-  return responsePromise
-    .then(response => JSON.parse(response.content));
-};
+// // create a sale
+// const createSale = (z, bundle) => {
+//   const responsePromise = z.request({
+//     method: 'POST',
+//     url: `${apiEndpoint}/Sale`,
+//     body: {
+//       ID: bundle.inputData.id,
+//       name: bundle.inputData.name
+//     }
+//   });
+//   return responsePromise
+//     .then(response => JSON.parse(response.content));
+// };
 
 module.exports = {
   key: 'sale',
@@ -109,12 +134,12 @@ module.exports = {
   // },
 
   // sample: {
-  //   id: 1,
-  //   name: 'Test'
+  //   "ID": "43961a95-c946-41af-831b-cb1b7711ec1c",
+  //   "OrderNumber": 'R12345'
   // },
 
-  // outputFields: [
-  //   {key: 'id', label: 'ID'},
-  //   {key: 'name', label: 'Name'}
-  // ]
+  outputFields: [
+    {key: 'ID', label: 'ID'},
+    {key: 'OrderNumber', label: 'Order Number'}
+  ]
 };
