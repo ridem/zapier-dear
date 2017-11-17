@@ -1,13 +1,11 @@
 const privateAuthEndpoint = require('../apiEndpoints').privateAuth
+const baseUrl = require('../apiEndpoints').base
 
 // create a particular invoice by name
 const createInvoice = (z, bundle) => {
   const authPromise = z.request({
     method: 'POST',
     url: privateAuthEndpoint,
-    headers: {
-      'content-type': 'application/x-www-form-urlencoded'
-    },
     form: {
       UserName: bundle.authData.username,
       Password: bundle.authData.password
@@ -19,25 +17,23 @@ const createInvoice = (z, bundle) => {
     if (response.status != 302) {
       throw new Error("Authentication failed");
     } else {
-      const cookie = response.getHeader('set-cookie')
+      const headers = {
+        'Cookie': response.getHeader('set-cookie')
+      }
       return z.request({
-        url: 'https://inventory.dearsystems.com/Sale/Print',
+        url: `${baseUrl}/Sale/Print`,
         params: {
           PrintEntityID: bundle.inputData.saleId,
           PrintTemplateID: bundle.inputData.templateId
         },
-        headers: {
-          'Cookie': cookie
-        }
+        headers: headers
       }).then(response => {
         if (response.content.length != 36) {
           throw new Error("Authentication failed");
         } else {
           const pdfRequest = z.request({
-            url: `https://inventory.dearsystems.com/Sale/Download/${response.content}`,
-            headers: {
-              'Cookie': cookie
-            },
+            url: `${baseUrl}/Sale/Download/${response.content}`,
+            headers: headers,
             raw: true
           })
           return z.stashFile(pdfRequest).then(url => {
@@ -67,14 +63,12 @@ module.exports = {
     ],
     perform: createInvoice,
 
-    // sample: {
-    //   id: 1,
-    //   name: 'Test'
-    // },
+    sample: {
+      pdfUrl: "https://zapier-dev-files.s3.amazonaws.com/cli-platform/be2e3fe5-8615-42e6-82e0-f17e2df57060",
+    },
 
-    // outputFields: [
-    //   {key: 'id', label: 'ID'},
-    //   {key: 'name', label: 'Name'}
-    // ]
+    outputFields: [
+      {key: 'pdfUrl', label: 'URL of Invoice PDF'}
+    ]
   }
 };

@@ -1,4 +1,7 @@
+const baseUrl = "https://inventory.dearsystems.com"
+
 module.exports = {
-  externalApi: "https://inventory.dearsystems.com/ExternalApi",
-  privateAuth: "https://inventory.dearsystems.com/Account/Login"
+  base: baseUrl,
+  externalApi: `${baseUrl}/ExternalApi`,
+  privateAuth: `${baseUrl}/Account/Login`
 }
