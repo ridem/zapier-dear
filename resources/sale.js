@@ -30,7 +30,7 @@ const listSales = (z, bundle) => {
   });
   return responsePromise
     .then(response => {
-      var page = Math.trunc(z.JSON.parse(response.content)["Total"] / listLimit) + 1
+      var page = Math.trunc((z.JSON.parse(response.content)["Total"] - 1) / listLimit) + 1
       return z.request({
         url: `${apiEndpoint}/${resourceName}`,
         params: {

@@ -1,4 +1,5 @@
-const InvoiceCreate = require('./creates/invoice');
+const TemplateResource = require('./resources/template');
+const PDFCreate = require('./creates/pdf');
 const Authentication = require('./authentication');
 const SaleResource = require('./resources/sale');
 
@@ -31,6 +32,7 @@ const App = {
 
   // If you want to define optional resources to simplify creation of triggers, searches, creates - do that here!
 	resources: {
+    [TemplateResource.key]: TemplateResource,
     [SaleResource.key]: SaleResource,
 	},
 
@@ -44,7 +46,7 @@ const App = {
 
   // If you want your creates to show up, you better include it here!
 	creates: {
-    [InvoiceCreate.key]: InvoiceCreate,
+    [PDFCreate.key]: PDFCreate,
 	}
 };
 
