@@ -1,5 +1,6 @@
 const privateAuthEndpoint = require('./apiEndpoints').privateAuth;
 
+// This promise returns a `headers` object
 const privateAuth = (z, bundle) => {
   const authPromise = z.request({
     method: 'POST',

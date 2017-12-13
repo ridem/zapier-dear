@@ -1,9 +1,10 @@
 const privateAuth = require('../privateAuthentication');
-// get a list of templates
+const baseUrl = require('../apiEndpoints').base;
+
 const listTemplates = (z, bundle) => {
   return privateAuth(z, bundle).then(headers => {
     return z.request({
-      url: "https://inventory.dearsystems.com/api/vtemplate",
+      url: `${baseUrl}/api/vtemplate`,
       headers: headers,
       params: {
         page: (bundle.meta.page + 1) 
@@ -22,7 +23,6 @@ const listTemplates = (z, bundle) => {
 module.exports = {
   key: 'template',
   noun: 'Template',
-
   list: {
     display: {
       label: 'New Template',
